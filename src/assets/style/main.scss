@@ -1,0 +1,29 @@
+@import "reset";
+
+.j-spacer {
+  display: flex;
+  flex-grow: 1;
+}
+
+.scroll-content {
+  display: flex;
+  flex-direction: column;
+  background-color: #ececec;
+
+  .scroll-tag {
+    margin-top: 5vw;
+    border-radius: 20px;
+    overflow: hidden;
+
+    /deep/ {
+
+      .mint-cell {
+        min-height: 10vw;
+
+        .mint-cell-wrapper {
+          font-size: 4vw;
+        }
+      }
+    }
+  }
+}
