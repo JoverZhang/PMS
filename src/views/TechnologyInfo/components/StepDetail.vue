@@ -10,7 +10,7 @@
         </div>
       </template>
     </Header>
-    <div class="scroll-content">
+    <div class="scroll-content" :style="{paddingTop:scrollPadding}">
       <div class="scroll-tag" style="background-color: #ffffff">
         <mt-cell title="步骤:">{{ stepInfo.step }}</mt-cell>
         <mt-cell title="步骤描述:">{{ stepInfo.des }}</mt-cell>
@@ -74,11 +74,16 @@ export default {
 
   data: () => ({
     materialCode: '',
-    materialItemInfoMap: {}
+    materialItemInfoMap: {},
+    scrollPadding: ''
   }),
 
   mounted () {
     this.init()
+    this.handleSettingPadding()
+    window.onresize = () => {
+      this.handleSettingPadding()
+    }
   },
 
   methods: {
@@ -96,23 +101,35 @@ export default {
         })
     },
 
-    postHandler (button, { step, qrcode } = {}) {
-      this.$axios.post(this.$api.Page5.Index, {
-        token: this.$store.state.userInfo.token,
-        deviceCode: this.deviceCode,
-        batch: this.batch,
-        button,
-        step,
-        qrcode
+    handleSettingPadding () {
+      this.$nextTick(()=>{
+        const common = document.querySelector("div[class='common-content']")
+        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
       })
-        .then(res => {
-          if (res.data.errno === 0) {
-            alert(res.data.msg)
-          } else {
-            alert(res.data.msg)
-          }
-        })
+    },
+
+    postHandler () {
+      // postHandlerOperating
+      this.$emit('handleOperating')
     }
+
+    // postHandler (button, { step, qrcode } = {}) {
+    //   this.$axios.post(this.$api.Page5.Index, {
+    //     token: this.$store.state.userInfo.token,
+    //     deviceCode: this.deviceCode,
+    //     batch: this.batch,
+    //     button,
+    //     step,
+    //     qrcode
+    //   })
+    //     .then(res => {
+    //       if (res.data.errno === 0) {
+    //         alert(res.data.msg)
+    //       } else {
+    //         alert(res.data.msg)
+    //       }
+    //     })
+    // }
   },
 
   components: {
@@ -123,7 +140,7 @@ export default {
 
 <style lang="scss" scoped>
   .common-content {
-    height: 50vw;
+    // height: 50vw;
     padding: 5vw;
 
     > .mint-field {

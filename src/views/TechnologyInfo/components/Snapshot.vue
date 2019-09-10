@@ -9,7 +9,7 @@
         </div>
       </template>
     </Header>
-    <div class="scroll-content">
+    <div class="scroll-content" :style="{paddingTop:scrollPadding}">
       <div class="scroll-tag">
         <mt-field
           v-for="item in submitForm"
@@ -35,7 +35,8 @@ export default {
     deviceCode: '',
     batch: '',
 
-    submitForm: []
+    submitForm: [],
+    scrollPadding: ''
   }),
 
   created () {
@@ -52,11 +53,22 @@ export default {
 
   mounted () {
     this.init()
+    this.handleSettingPadding()
+    window.onresize = () => {
+      this.handleSettingPadding()
+    }
   },
 
   methods: {
     init () {
       this.getDeviceAttrDict()
+    },
+
+    handleSettingPadding () {
+      this.$nextTick(()=>{
+        const common = document.querySelector("div[class='common-content']")
+        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
+      })
     },
 
     getDeviceAttrDict () {
@@ -106,7 +118,7 @@ export default {
 
 <style lang="scss" scoped>
   .common-content {
-    height: 35vw;
+    // height: 35vw;
     padding: 5vw;
 
     > .mint-field {

@@ -35,19 +35,22 @@
         </div>
       </template>
     </Header>
-    <div class="scroll-content">
+    <div class="scroll-content" :style="{paddingTop:scrollPadding}">
       <div
         class="scroll-tag"
         v-for="item in batchList"
         :key="item.batch"
         @click="goRouter(item)"
       >
+        <mt-cell class="ceshices" title="当前状态:">
+          <span :class="'stateColor'+item.state">{{ item.stateText }}</span>
+        </mt-cell>
         <mt-cell title="工单编号:">{{ item.wocode }}</mt-cell>
         <mt-cell title="生产批次:">{{ item.batch }}</mt-cell>
         <mt-cell title="产量:">{{ item.iquantity }} kg</mt-cell>
         <mt-cell title="配方编号:">{{ item.fomulaCode }}</mt-cell>
         <mt-cell title="工艺编号:">{{ item.techCode }}</mt-cell>
-        <mt-cell title="状态:">{{ item.state }}</mt-cell>
+        <!-- <mt-cell title="状态:">{{ item.state }}</mt-cell> -->
       </div>
     </div>
   </div>
@@ -69,7 +72,8 @@ export default {
 
     batchList: [],
     allBatchCount: '',
-    endBatchCount: ''
+    endBatchCount: '',
+    scrollPadding: ''
   }),
 
   watch: {
@@ -100,11 +104,22 @@ export default {
 
   mounted () {
     this.init()
+    this.handleSettingPadding()
+    window.onresize = () => {
+      this.handleSettingPadding()
+    }
   },
 
   methods: {
     init () {
       this.getBatchList()
+    },
+
+    handleSettingPadding () {
+      this.$nextTick(()=>{
+        const common = document.querySelector("div[class='common-content']")
+        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
+      })
     },
 
     getBatchList () {
@@ -119,6 +134,9 @@ export default {
       })
         .then(res => {
           if (res.data.errno === 0) {
+            res.data.data.batchList.map(v => {
+              v.stateText = v.state === '0' ? '未激活' : v.state === '1' ? '待机' : v.state === '2' ? '自动工作' : v.state === '3' ? '手动工作' : v.state === '4' ? '调试工作' : v.state === '5' ? '故障' : v.state === '6' ? '维护' : v.state === '7' ? '暂停' : v.state === '10' ? '报废' : ''
+            })
             this.batchList = res.data.data.batchList
             this.allBatchCount = res.data.data.allBatchCount
             this.endBatchCount = res.data.data.endBatchCount
@@ -149,7 +167,7 @@ export default {
 <style lang="scss" scoped>
   .common-content {
     overflow: hidden;
-    height: 60vw;
+    // height: 60vw;
     padding: 2vw;
 
     > .mint-field {
@@ -158,7 +176,22 @@ export default {
   }
 
   .scroll-content {
-    padding: calc(70vw - 9.07vw) 5vw 0;
+    padding: calc(70vw - 9.07vw) 5vw 5vw;
     min-height: calc(100vh - 35.333vw - (70vw - 9.07vw));
+  }
+  .stateColor0,.stateColor1 {
+    color: #fb8c00;
+  }
+  .stateColor2,.stateColor3{
+    color: rgb(17, 203, 119)
+  }
+  .stateColor4,.stateColor7{
+    color: #1867c0
+  }
+  .stateColor5,.stateColor6{
+    color: #ff0000
+  }
+  .stateColor10{
+    color: #6b6b6b
   }
 </style>

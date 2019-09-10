@@ -64,7 +64,7 @@ export default {
     top: -26.266vw;
     height: 35.333vw;
     width: 100vw;
-
+    
     .bg {
       width: 100vw;
       height: 35.333vw;
@@ -120,6 +120,7 @@ export default {
       border-radius: 20px;
       background-color: #ffffff;
       border-bottom: .5px solid #ececec;
+      box-shadow: 1px 1px #ececec;
     }
   }
 </style>

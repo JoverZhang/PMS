@@ -1,4 +1,4 @@
-const host = 'http://192.168.43.157:9001/'
+const host = 'http://172.16.1.12:9001/'
 
 function mergeUrl (apis) {
   let cpApis = JSON.parse(JSON.stringify(apis))

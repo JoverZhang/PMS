@@ -18,11 +18,13 @@
         :key="item.deviceGroup"
         @click="goRouter(item)"
       >
+        <mt-cell class="ceshices" title="当前状态:">
+          <span :class="'stateColor'+item.state">{{ item.stateText }}</span>
+        </mt-cell>
         <mt-cell title="设备组:">{{ item.deviceGroup }}</mt-cell>
         <mt-cell title="设备组名:">{{ item.deviceGroupName }}</mt-cell>
         <mt-cell title="最大产量:">{{ item.quantityUpLimit }} kg</mt-cell>
         <mt-cell title="最小产量:">{{ item.quantityLowLimit }} kg</mt-cell>
-        <mt-cell title="当前状态:">{{ item.state }}</mt-cell>
       </div>
     </div>
   </div>
@@ -69,6 +71,9 @@ export default {
       })
         .then(res => {
           if (res.data.errno === 0) {
+            res.data.data.deviceGroupList.map(v => {
+              v.stateText = v.state === '0' ? '未激活' : v.state === '1' ? '待机' : v.state === '2' ? '自动工作' : v.state === '3' ? '手动工作' : v.state === '4' ? '调试工作' : v.state === '5' ? '故障' : v.state === '6' ? '维护' : v.state === '7' ? '暂停' : v.state === '10' ? '报废' : ''
+            })
             this.deviceGroupList = res.data.data.deviceGroupList
           }
         })
@@ -99,5 +104,20 @@ export default {
   .scroll-content {
     padding: calc(40vw - 9.07vw) 5vw 0;
     min-height: calc(100vh - 35.333vw - (40vw - 9.07vw));
+  }
+  .stateColor0,.stateColor1 {
+    color: #fb8c00;
+  }
+  .stateColor2,.stateColor3{
+    color: rgb(17, 203, 119)
+  }
+  .stateColor4,.stateColor7{
+    color: #1867c0
+  }
+  .stateColor5,.stateColor6{
+    color: #ff0000
+  }
+  .stateColor10{
+    color: #6b6b6b
   }
 </style>

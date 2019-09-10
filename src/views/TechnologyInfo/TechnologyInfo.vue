@@ -10,24 +10,29 @@
       :onStep="onStep"
       :stepInfo="selectedStepInfo"
       @onBack="onBack"
+      @handleOperating="handleOperating"
     />
 
     <div v-else>
       <Header :background="require('@/assets/image/4.png')">
         <template v-slot:content>
           <div class="common-content">
-            <div
+            <div class="common-header">
+              <div
               class="iconfont icon-shexiangji"
               style="font-size: 6vw; color: #fb8c00;"
               @click="openSnapshot = true"
             ></div>
+              <div class="curr" @click="currStep"> <i class="iconfont icon-arrow-"></i> 当前步骤</div>
+            </div>
+            <mt-cell title="生产批次:">{{ batch }}</mt-cell>
             <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
             <mt-cell title="设备单元:">{{ deviceCode }}</mt-cell>
             <mt-cell title="当前步骤/总步骤">{{onStep}}/{{stepsInfo.length}}</mt-cell>
           </div>
         </template>
       </Header>
-      <div class="scroll-content">
+      <div class="scroll-content" :style="{paddingTop:scrollPadding}">
         <div
           class="scroll-tag"
           v-for="item in stepsInfo"
@@ -89,7 +94,8 @@ export default {
     onStep: -1,
 
     /** StepDetail */
-    selectedStepInfo: {}
+    selectedStepInfo: {},
+    scrollPadding: ''
   }),
 
   created () {
@@ -106,11 +112,22 @@ export default {
 
   mounted () {
     this.init()
+    this.handleSettingPadding()
+    window.onresize = () => {
+      this.handleSettingPadding()
+    }
   },
 
   methods: {
     init () {
       this.getTechList()
+    },
+
+    handleSettingPadding () {
+      this.$nextTick(()=>{
+        const common = document.querySelector("div[class='common-content']")
+        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
+      })
     },
 
     getTechList () {
@@ -142,6 +159,18 @@ export default {
             this.generateDeviceFunDetail()
           }
         })
+    },
+
+    handleOperating (value) {
+      console.log(11111111)
+      this.openStepDetail = false
+      this.openSnapshot = true
+    },
+
+    // current step
+    currStep () {
+      this.selectedStepInfo = this.stepsInfo[this.onStep-1]
+      this.openStepDetail = true
     },
 
     generateDeviceFunDetail () {
@@ -247,16 +276,27 @@ export default {
 
 <style lang="scss" scoped>
   .common-content {
-    height: 40vw;
+    // height: 52vw;
     padding: 5vw;
-
+    
     > .mint-field {
       border-bottom: .5px solid #ececec;
     }
   }
 
+  .common-header{
+    display: flex;
+    justify-content: space-between;
+    .curr{
+      color: rgb(107, 107, 107);
+      .icon-arrow-{
+        color: rgb(21, 102, 202)
+      }
+    }
+  }
+
   .scroll-content {
-    padding: calc(50vw - 9.07vw) 5vw 0;
-    min-height: calc(100vh - 35.333vw - (40vw - 9.07vw));
+    padding: calc(62vw - 9.07vw) 5vw 5vw;
+    min-height: calc(100vh - 35.333vw - (52vw - 9.07vw));
   }
 </style>
