@@ -7,13 +7,13 @@ export default new Vuex.Store({
   state: {
     userInfo: {
       username: 'test',
-      token: 'test572148'
+      token: 'yazhouyilige'
     },
 
     deviceGroup: 'DGtest001',
     deviceCode: 'D01',
-    batch: 'W1B1'
-
+    batch: 'W1B1',
+    isOnline: false
   },
 
   mutations: {
@@ -23,6 +23,10 @@ export default new Vuex.Store({
        username: <String>
        */
       state.userInfo = { token, username }
+    },
+
+    setOnLine (state, isOnline) {
+      state.isOnline = isOnline
     },
 
     setDeviceGroup (state, deviceGroup) {

@@ -78,7 +78,19 @@ export default {
 
     batchList: [],
     allBatchCount: '',
-    endBatchCount: ''
+    endBatchCount: '',
+    isOnLine: false,
+    stateMap: {
+      '0': '未激活',
+      '1': '待机',
+      '2': '自动工作',
+      '3': '手动工作',
+      '4': '调试工作',
+      '5': '故障',
+      '6': '维护',
+      '7': '暂停',
+      '10': '报废'
+    }
   }),
 
   watch: {
@@ -129,11 +141,12 @@ export default {
         .then(res => {
           if (res.data.errno === 0) {
             res.data.data.batchList.map(v => {
-              v.stateText = v.state === '0' ? '未激活' : v.state === '1' ? '待机' : v.state === '2' ? '自动工作' : v.state === '3' ? '手动工作' : v.state === '4' ? '调试工作' : v.state === '5' ? '故障' : v.state === '6' ? '维护' : v.state === '7' ? '暂停' : v.state === '10' ? '报废' : ''
+              v.stateText = this.stateMap[v.state]
             })
             this.batchList = res.data.data.batchList
             this.allBatchCount = res.data.data.allBatchCount
             this.endBatchCount = res.data.data.endBatchCount
+            this.isOnLine = res.data.data.isOnline
           }
         })
     },
@@ -150,6 +163,7 @@ export default {
     },
     goRouter (itemInfo) {
       this.$store.commit('setBatch', itemInfo.batch)
+      this.$store.commit('setOnLine', this.isOnLine)
       this.$router.push({ name: 'TechnologyInfo' })
     }
   },

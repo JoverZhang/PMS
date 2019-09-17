@@ -29,25 +29,27 @@
     </div>
     <div style="position: fixed; bottom: 0; width: 100vw; display: flex">
       <mt-button
-        type="primary"
+        :type="isOnline?'primary':'default'"
+        :disabled="isOnline"
         @click="postHandler('production_start')"
       >开始生产
       </mt-button>
       <mt-button
-        type="primary"
+        :type="isOnline?'primary':'default'"
+        :disabled="isOnline"
         @click="postHandler('step_complete', {step: onStep})"
       >完成步骤
       </mt-button>
       <mt-button
-        type="primary"
-        :disabled="onStep === stepInfo.step"
+        :type="isOnline?'primary':'default'"
+        :disabled="onStep === stepInfo.step || isOnline"
         @click="postHandler('step_jump', {step: stepInfo.step})"
       >跳转步骤
       </mt-button>
       <mt-button type="primary" @click="postHandler('is_stop')">暂停恢复</mt-button>
       <mt-button
-        type="primary"
-        :disabled="!materialCode"
+        :type="isOnline?'primary':'default'"
+        :disabled="!materialCode || isOnline"
         @click="postHandler('touliao_decision',{qrcode: materialCode})"
       >确认投料
       </mt-button>
@@ -76,10 +78,12 @@ export default {
 
   data: () => ({
     materialCode: '',
-    materialItemInfoMap: {}
+    materialItemInfoMap: {},
+    isOnline: false
   }),
 
   mounted () {
+    this.isOnLine = this.$store.state.isOnline
     this.init()
   },
 

@@ -52,7 +52,6 @@ export default {
       this.$router.push({ name: 'DeviceGroupInfo' })
       return
     }
-    console.log(this.step, this.button)
 
     this.batch = batch
     this.deviceGroup = this.$store.state.deviceGroup
@@ -80,14 +79,12 @@ export default {
         .then(res => {
           if (res.data.errno === 0) {
             const deviceAttrDict = res.data.data.deviceAttrDict
-            // const attrList = window.localStorage.getItem('attrList')
-            // console.log(JSON.parse(attrList))
-            this.submitForm = Object.keys(deviceAttrDict).map(attrName => ({
+            const attrList = JSON.parse(window.localStorage.getItem('attrList'))
+            this.submitForm = Object.keys(deviceAttrDict).map((attrName, index) => ({
               attrName,
-              value: '',
+              value: attrList ? attrList[index].value : '',
               unit: deviceAttrDict[attrName]
             }))
-            console.log(this.submitForm)
           }
         })
     },
@@ -105,7 +102,8 @@ export default {
         .then(res => {
           if (res.data.errno === 0) {
             alert(res.data.msg)
-            this.$router.back()
+            this.$emit('onBack')
+            // this.$router.back()
           } else {
             alert(res.data.msg)
           }

@@ -23,7 +23,7 @@
                 style="font-size: 6vw; color: #fb8c00;"
                 @click="direct_recording"
               ></div>
-              <div class="curr" @click="currStep"><i class="iconfont icon-arrow-"></i> 当前步骤</div>
+              <div class="curr" @click="currStep"><i class="iconfont icon-arrow-" :class="{isOnLine:'gay'}"></i> 当前步骤</div>
             </div>
             <mt-cell title="生产批次:">{{ batch }}</mt-cell>
             <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
@@ -99,7 +99,8 @@ export default {
     selectedStepInfo: {},
     toCurrBatch: false,
     button: '',
-    snapShotStep: ''
+    snapShotStep: '',
+    isOnLine: false
   }),
 
   created () {
@@ -121,6 +122,7 @@ export default {
 
   methods: {
     init () {
+      this.isOnLine = this.$store.state.isOnline
       this.getTechList()
     },
 
@@ -129,7 +131,8 @@ export default {
         params: {
           token: this.$store.state.userInfo.token,
           deviceCode: this.deviceCode,
-          batch: this.toCurrBatch === 1 ? '' : this.batch
+          batch: this.toCurrBatch === 1 ? '' : this.batch,
+          button: this.toCurrBatch === 1 ? '1' : ''
         }
       })
         .then(res => {
@@ -170,7 +173,7 @@ export default {
 
     // to current step
     currStep () {
-      if (!this.onStep) return
+      if (!this.onStep || this.isOnLine) return
       this.selectedStepInfo = this.stepsInfo[this.onStep - 1]
       this.openStepDetail = true
       this.snapShotStep = this.stepsInfo[this.onStep - 1].step
@@ -302,6 +305,9 @@ export default {
 
       .icon-arrow- {
         color: rgb(21, 102, 202)
+      }
+      .gay {
+        color: #ececec;
       }
     }
   }
