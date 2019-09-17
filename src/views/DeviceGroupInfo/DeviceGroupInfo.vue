@@ -11,7 +11,7 @@
       </template>
     </Header>
 
-    <div class="scroll-content">
+    <div class="scroll-content" :style="{paddingTop:scrollPadding}">
       <div
         class="scroll-tag"
         v-for="item in deviceGroupList"
@@ -32,10 +32,12 @@
 
 <script>
 import Header from '@/components/Header.vue'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'DeviceGroupInfo',
 
+  mixins: [ paddingMixin ],
   data: () => ({
     deviceGroupList: [],
     deviceGroup: '',
@@ -93,7 +95,7 @@ export default {
 
 <style lang="scss" scoped>
   .common-content {
-    height: 30vw;
+    /*height: 30vw;*/
     padding: 5vw;
 
     > .mint-field {
@@ -102,8 +104,8 @@ export default {
   }
 
   .scroll-content {
-    padding: calc(40vw - 9.07vw) 5vw 0;
-    min-height: calc(100vh - 35.333vw - (40vw - 9.07vw));
+    /*padding: calc(40vw - 9.07vw) 5vw 0;*/
+    // min-height: calc(100vh - 35.333vw - (40vw - 9.07vw));
   }
   .stateColor0,.stateColor1 {
     color: #fb8c00;

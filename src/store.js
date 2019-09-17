@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     userInfo: {
       username: 'test',
-      token: 'test723651'
+      token: 'test572148'
     },
 
     deviceGroup: 'DGtest001',

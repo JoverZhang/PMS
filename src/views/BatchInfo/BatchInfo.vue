@@ -21,9 +21,13 @@
     <Header :background="require('@/assets/image/3.png')">
       <template v-slot:content>
         <div class="common-content">
-          <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
+          <div class="common-content-header">
+            <!--<div @click="() => $router.back()">返回上一级</div>-->
+            <div class="to-curr-batch" @click="toCurrBatch"><i class="iconfont icon-arrow-"></i>当前批次</div>
+          </div>
+          <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
           <mt-cell title="设备单元:">{{ deviceCode }}</mt-cell>
-          <mt-cell title="未完成/已完成">{{endBatchCount}}/{{allBatchCount}}</mt-cell>
+          <mt-cell title="已完成/未完成">{{endBatchCount}}/{{allBatchCount}}</mt-cell>
           <mt-field placeholder="生产批次关键字" v-model="batch">
             <i class="iconfont icon-search"></i>
           </mt-field>
@@ -58,10 +62,12 @@
 
 <script>
 import Header from '@/components/Header.vue'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'BatchInfo',
 
+  mixins: [ paddingMixin ],
   data: () => ({
     deviceGroup: '',
     deviceCode: '',
@@ -72,8 +78,7 @@ export default {
 
     batchList: [],
     allBatchCount: '',
-    endBatchCount: '',
-    scrollPadding: ''
+    endBatchCount: ''
   }),
 
   watch: {
@@ -104,22 +109,11 @@ export default {
 
   mounted () {
     this.init()
-    this.handleSettingPadding()
-    window.onresize = () => {
-      this.handleSettingPadding()
-    }
   },
 
   methods: {
     init () {
       this.getBatchList()
-    },
-
-    handleSettingPadding () {
-      this.$nextTick(()=>{
-        const common = document.querySelector("div[class='common-content']")
-        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
-      })
     },
 
     getBatchList () {
@@ -151,7 +145,9 @@ export default {
     openEndDate () {
       this.$refs.endDate.open()
     },
-
+    toCurrBatch () {
+      this.$router.push({ name: 'TechnologyInfo', query: { deviceCode: this.deviceCode } })
+    },
     goRouter (itemInfo) {
       this.$store.commit('setBatch', itemInfo.batch)
       this.$router.push({ name: 'TechnologyInfo' })
@@ -169,7 +165,17 @@ export default {
     overflow: hidden;
     // height: 60vw;
     padding: 2vw;
-
+    .common-content-header{
+      display: flex;
+      justify-content: flex-end;
+      .to-curr-batch{
+        padding: 5px;
+        font-size: 16px;
+        .icon-arrow- {
+          color: rgb(13, 201, 120)
+        }
+      }
+    }
     > .mint-field {
       border-bottom: .5px solid #ececec;
     }
@@ -177,7 +183,7 @@ export default {
 
   .scroll-content {
     padding: calc(70vw - 9.07vw) 5vw 5vw;
-    min-height: calc(100vh - 35.333vw - (70vw - 9.07vw));
+    // min-height: calc(100vh - 35.333vw - (70vw - 9.07vw));
   }
   .stateColor0,.stateColor1 {
     color: #fb8c00;

@@ -3,7 +3,8 @@
     <Header :background="require('@/assets/image/5.png')" :on-back="() => $emit('onBack')">
       <template v-slot:content>
         <div class="common-content">
-          <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
+          <!--<div class="back" @click="() => $emit('onBack','detail')">返回上一级</div>-->
+          <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
           <mt-cell title="设备单元:">{{ deviceCode }}</mt-cell>
           <mt-cell title="生产批次:">{{ batch }}</mt-cell>
           <mt-field placeholder="扫描物料二维码" v-model="materialCode"></mt-field>
@@ -56,10 +57,11 @@
 
 <script>
 import Header from '@/components/Header'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'StepDetail',
-
+  mixins: [ paddingMixin ],
   props: {
     deviceGroup: String,
     deviceCode: String,
@@ -74,16 +76,11 @@ export default {
 
   data: () => ({
     materialCode: '',
-    materialItemInfoMap: {},
-    scrollPadding: ''
+    materialItemInfoMap: {}
   }),
 
   mounted () {
     this.init()
-    this.handleSettingPadding()
-    window.onresize = () => {
-      this.handleSettingPadding()
-    }
   },
 
   methods: {
@@ -101,17 +98,14 @@ export default {
         })
     },
 
-    handleSettingPadding () {
-      this.$nextTick(()=>{
-        const common = document.querySelector("div[class='common-content']")
-        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
-      })
-    },
-
-    postHandler () {
+    postHandler (button) {
       // postHandlerOperating
-      this.$emit('handleOperating')
-    }
+      if (button === 'touliao_decision') {
+        this.postDeviceAttr(button)
+        return
+      }
+      this.$emit('handleOperating', button)
+    },
 
     // postHandler (button, { step, qrcode } = {}) {
     //   this.$axios.post(this.$api.Page5.Index, {
@@ -130,6 +124,26 @@ export default {
     //       }
     //     })
     // }
+    postDeviceAttr (button) {
+      this.$axios.post(this.$api.Page6.Index, {
+        token: this.$store.state.userInfo.token,
+        deviceCode: this.deviceCode,
+        batch: this.batch,
+        step: this.stepInfo.step.toString(),
+        button: button,
+        materialCode: this.materialCode,
+        deviceAttrList: ''
+      })
+        .then(res => {
+          if (res.data.errno === 0) {
+            alert(res.data.msg)
+            window.localStorage.setItem('attrList', this.submitForm)
+            this.$router.back()
+          } else {
+            alert(res.data.msg)
+          }
+        })
+    }
   },
 
   components: {
@@ -150,7 +164,7 @@ export default {
 
   .scroll-content {
     padding: calc(60vw - 9.07vw) 5vw 0;
-    min-height: calc(100vh - 35.333vw - (60vw - 9.07vw));
+    // min-height: calc(100vh - 35.333vw - (60vw - 9.07vw));
 
     .scroll-tag {
       height: 100vw;

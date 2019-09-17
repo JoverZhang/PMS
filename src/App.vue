@@ -11,6 +11,10 @@ export default {
 </script>
 
 <style lang="scss">
+html{
+  height: 100%;
+  background-color: #ececec;
+}
   #app {
     font-family: sans-serif, Helvetica, Arial;
   }

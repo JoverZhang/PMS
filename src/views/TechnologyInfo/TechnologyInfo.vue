@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Snapshot v-if="openSnapshot" @onBack="onBack" />
+    <Snapshot v-if="openSnapshot" @onBack="onBack" :step="snapShotStep" :button="button"/>
 
     <StepDetail
       v-else-if="openStepDetail"
@@ -19,14 +19,14 @@
           <div class="common-content">
             <div class="common-header">
               <div
-              class="iconfont icon-shexiangji"
-              style="font-size: 6vw; color: #fb8c00;"
-              @click="openSnapshot = true"
-            ></div>
-              <div class="curr" @click="currStep"> <i class="iconfont icon-arrow-"></i> 当前步骤</div>
+                class="iconfont icon-shexiangji"
+                style="font-size: 6vw; color: #fb8c00;"
+                @click="direct_recording"
+              ></div>
+              <div class="curr" @click="currStep"><i class="iconfont icon-arrow-"></i> 当前步骤</div>
             </div>
             <mt-cell title="生产批次:">{{ batch }}</mt-cell>
-            <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
+            <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
             <mt-cell title="设备单元:">{{ deviceCode }}</mt-cell>
             <mt-cell title="当前步骤/总步骤">{{onStep}}/{{stepsInfo.length}}</mt-cell>
           </div>
@@ -55,14 +55,16 @@
 import Header from '@/components/Header.vue'
 import Snapshot from './components/Snapshot.vue'
 import StepDetail from './components/StepDetail.vue'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'TechnologyInfo',
-
+  mixins: [paddingMixin],
   data: () => ({
     /** Windows open */
     openSnapshot: false,
     openStepDetail: false,
+    openMode: '',
 
     batch: '',
     deviceGroup: '',
@@ -95,7 +97,9 @@ export default {
 
     /** StepDetail */
     selectedStepInfo: {},
-    scrollPadding: ''
+    toCurrBatch: false,
+    button: '',
+    snapShotStep: ''
   }),
 
   created () {
@@ -107,15 +111,12 @@ export default {
 
     this.batch = batch
     this.deviceGroup = this.$store.state.deviceGroup
-    this.deviceCode = this.$store.state.deviceCode
+    this.deviceCode = this.$route.query.deviceCode ? this.$route.query.deviceCode : this.$store.state.deviceCode
+    this.toCurrBatch = this.$route.query.deviceCode ? 1 : 0
   },
 
   mounted () {
     this.init()
-    this.handleSettingPadding()
-    window.onresize = () => {
-      this.handleSettingPadding()
-    }
   },
 
   methods: {
@@ -123,19 +124,12 @@ export default {
       this.getTechList()
     },
 
-    handleSettingPadding () {
-      this.$nextTick(()=>{
-        const common = document.querySelector("div[class='common-content']")
-        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
-      })
-    },
-
     getTechList () {
       this.$axios.get(this.$api.Page4.Index, {
         params: {
           token: this.$store.state.userInfo.token,
           deviceCode: this.deviceCode,
-          batch: this.batch
+          batch: this.toCurrBatch === 1 ? '' : this.batch
         }
       })
         .then(res => {
@@ -162,15 +156,24 @@ export default {
     },
 
     handleOperating (value) {
-      console.log(11111111)
       this.openStepDetail = false
       this.openSnapshot = true
+      this.openMode = 'detail'
+      this.button = value
     },
 
-    // current step
+    direct_recording () {
+      this.openSnapshot = true
+      this.button = 'direct_recording'
+      console.log(this.snapShotStep)
+    },
+
+    // to current step
     currStep () {
-      this.selectedStepInfo = this.stepsInfo[this.onStep-1]
+      if (!this.onStep) return
+      this.selectedStepInfo = this.stepsInfo[this.onStep - 1]
       this.openStepDetail = true
+      this.snapShotStep = this.stepsInfo[this.onStep - 1].step
     },
 
     generateDeviceFunDetail () {
@@ -224,7 +227,7 @@ export default {
         let stepInfo = { step: flag + 1, des: _des[flag], fun: deviceFunDetail[_fun[flag]].name }
 
         /** Add method */
-        if (deviceFunDetail[_fun[flag]].method.name) {
+        if (deviceFunDetail[_fun[flag]].method && deviceFunDetail[_fun[flag]].method.name) {
           stepInfo.method = deviceFunDetail[_fun[flag]].method.data[_method[flag]]
         }
 
@@ -254,15 +257,21 @@ export default {
     },
 
     goRouter (itemInfo) {
-      console.log(itemInfo)
       this.selectedStepInfo = itemInfo
       this.openStepDetail = true
+      this.snapShotStep = itemInfo.step
     },
 
     /** FixMe The code is very lower */
-    onBack () {
-      this.openSnapshot = false
-      this.openStepDetail = false
+    onBack (value) {
+      if (this.openMode === 'detail') {
+        this.openSnapshot = false
+        this.openStepDetail = true
+        this.openMode = ''
+      } else {
+        this.openSnapshot = false
+        this.openStepDetail = false
+      }
     }
   },
 
@@ -278,18 +287,20 @@ export default {
   .common-content {
     // height: 52vw;
     padding: 5vw;
-    
+
     > .mint-field {
       border-bottom: .5px solid #ececec;
     }
   }
 
-  .common-header{
+  .common-header {
     display: flex;
     justify-content: space-between;
-    .curr{
+
+    .curr {
       color: rgb(107, 107, 107);
-      .icon-arrow-{
+
+      .icon-arrow- {
         color: rgb(21, 102, 202)
       }
     }
@@ -297,6 +308,6 @@ export default {
 
   .scroll-content {
     padding: calc(62vw - 9.07vw) 5vw 5vw;
-    min-height: calc(100vh - 35.333vw - (52vw - 9.07vw));
+    // min-height: calc(100vh - 35.333vw - (52vw - 9.07vw));
   }
 </style>

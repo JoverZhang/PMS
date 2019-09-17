@@ -3,6 +3,7 @@
     <Header :background="require('@/assets/image/2.png')">
       <template v-slot:content>
         <div class="common-content">
+          <!--<div @click="() => $router.back()">返回上一级</div>-->
           <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
           <mt-field placeholder="设备单元关键字" v-model="deviceCode">
             <i class="iconfont icon-search"></i>
@@ -10,7 +11,7 @@
         </div>
       </template>
     </Header>
-    <div class="scroll-content">
+    <div class="scroll-content" :style="{paddingTop:scrollPadding}">
       <div
         class="scroll-tag"
         v-for="item in deviceList"
@@ -32,10 +33,12 @@
 
 <script>
 import Header from '@/components/Header.vue'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'DeviceInfo',
 
+  mixins: [ paddingMixin ],
   data: () => ({
     deviceGroup: '',
     deviceCode: '',
@@ -99,7 +102,7 @@ export default {
 
 <style lang="scss" scoped>
   .common-content {
-    height: 30vw;
+    /*height: 30vw;*/
     padding: 5vw;
 
     > .mint-field {
@@ -109,7 +112,7 @@ export default {
 
   .scroll-content {
     padding: calc(40vw - 9.07vw) 5vw 5vw;
-    min-height: calc(100vh - 35.333vw - (40vw - 9.07vw));
+    // min-height: calc(100vh - 35.333vw - (40vw - 4.07vw));
   }
   .stateColor0,.stateColor1 {
     color: #fb8c00;

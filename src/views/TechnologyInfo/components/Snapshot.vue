@@ -3,7 +3,8 @@
     <Header :background="require('@/assets/image/6.png')" :on-back="() => $emit('onBack')">
       <template v-slot:content>
         <div class="common-content">
-          <mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>
+          <!--<div @click="() => $emit('onBack','shot')">返回上一级</div>-->
+          <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
           <mt-cell title="设备单元:">{{ deviceCode }}</mt-cell>
           <mt-cell title="生产批次:">{{ batch }}</mt-cell>
         </div>
@@ -26,17 +27,23 @@
 
 <script>
 import Header from '@/components/Header.vue'
+import { paddingMixin } from '@/assets/js/mixins'
 
 export default {
   name: 'Snapshot',
-
+  mixins: [ paddingMixin ],
+  props: {
+    step: {
+      default: ''
+    },
+    button: String
+  },
   data: () => ({
     deviceGroup: '',
     deviceCode: '',
     batch: '',
 
-    submitForm: [],
-    scrollPadding: ''
+    submitForm: []
   }),
 
   created () {
@@ -45,6 +52,7 @@ export default {
       this.$router.push({ name: 'DeviceGroupInfo' })
       return
     }
+    console.log(this.step, this.button)
 
     this.batch = batch
     this.deviceGroup = this.$store.state.deviceGroup
@@ -53,22 +61,11 @@ export default {
 
   mounted () {
     this.init()
-    this.handleSettingPadding()
-    window.onresize = () => {
-      this.handleSettingPadding()
-    }
   },
 
   methods: {
     init () {
       this.getDeviceAttrDict()
-    },
-
-    handleSettingPadding () {
-      this.$nextTick(()=>{
-        const common = document.querySelector("div[class='common-content']")
-        this.scrollPadding = 'calc('+ common.offsetHeight.toString() + 'px - 9.07vw)'
-      })
     },
 
     getDeviceAttrDict () {
@@ -83,20 +80,26 @@ export default {
         .then(res => {
           if (res.data.errno === 0) {
             const deviceAttrDict = res.data.data.deviceAttrDict
+            // const attrList = window.localStorage.getItem('attrList')
+            // console.log(JSON.parse(attrList))
             this.submitForm = Object.keys(deviceAttrDict).map(attrName => ({
               attrName,
               value: '',
               unit: deviceAttrDict[attrName]
             }))
+            console.log(this.submitForm)
           }
         })
     },
 
     postDeviceAttr () {
+      window.localStorage.setItem('attrList', JSON.stringify(this.submitForm))
       this.$axios.post(this.$api.Page6.Index, {
         token: this.$store.state.userInfo.token,
         deviceCode: this.deviceCode,
         batch: this.batch,
+        step: this.step.toString(),
+        button: this.button,
         deviceAttrList: JSON.stringify(this.submitForm)
       })
         .then(res => {
@@ -128,6 +131,6 @@ export default {
 
   .scroll-content {
     padding: calc(45vw - 9.07vw) 5vw 0;
-    min-height: calc(100vh - 35.333vw - (45vw - 9.07vw));
+    // min-height: calc(100vh - 35.333vw - (45vw - 9.07vw));
   }
 </style>
