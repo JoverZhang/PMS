@@ -29,26 +29,26 @@
     </div>
     <div style="position: fixed; bottom: 0; width: 100vw; display: flex">
       <mt-button
-        :type="isOnline?'primary':'default'"
+        :type="isOnline?'default':'primary'"
         :disabled="isOnline"
         @click="postHandler('production_start')"
       >开始生产
       </mt-button>
       <mt-button
-        :type="isOnline?'primary':'default'"
+        :type="isOnline?'default':'primary'"
         :disabled="isOnline"
         @click="postHandler('step_complete', {step: onStep})"
       >完成步骤
       </mt-button>
       <mt-button
-        :type="isOnline?'primary':'default'"
+        :type="isOnline?'default':'primary'"
         :disabled="onStep === stepInfo.step || isOnline"
         @click="postHandler('step_jump', {step: stepInfo.step})"
       >跳转步骤
       </mt-button>
       <mt-button type="primary" @click="postHandler('is_stop')">暂停恢复</mt-button>
       <mt-button
-        :type="isOnline?'primary':'default'"
+        :type="isOnline?'default':'primary'"
         :disabled="!materialCode || isOnline"
         @click="postHandler('touliao_decision',{qrcode: materialCode})"
       >确认投料
