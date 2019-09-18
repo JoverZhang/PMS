@@ -20,10 +20,11 @@
             <div class="common-header">
               <div
                 class="iconfont icon-shexiangji"
-                style="font-size: 6vw; color: #fb8c00;"
+                :class="isOnLine=='1'?'gay':''"
+                style="font-size: 6vw;"
                 @click="direct_recording"
               ></div>
-              <div class="curr" @click="currStep"><i class="iconfont icon-arrow-" :class="{isOnLine:'gay'}"></i> 当前步骤</div>
+              <div class="curr" @click="currStep"><i class="iconfont icon-arrow-"></i> 当前步骤</div>
             </div>
             <mt-cell title="生产批次:">{{ batch }}</mt-cell>
             <!--<mt-cell title="设备组:">{{ deviceGroup }}</mt-cell>-->
@@ -100,7 +101,7 @@ export default {
     toCurrBatch: false,
     button: '',
     snapShotStep: '',
-    isOnLine: false
+    isOnLine: '0'
   }),
 
   created () {
@@ -166,9 +167,9 @@ export default {
     },
 
     direct_recording () {
+      if (this.isOnLine) return
       this.openSnapshot = true
       this.button = 'direct_recording'
-      console.log(this.snapShotStep)
     },
 
     // to current step
@@ -300,14 +301,17 @@ export default {
     display: flex;
     justify-content: space-between;
 
+    .icon-shexiangji{
+      color: #fb8c00;
+    }
+    .gay {
+      color: #6b6b6b;
+    }
     .curr {
       color: rgb(107, 107, 107);
 
       .icon-arrow- {
         color: rgb(21, 102, 202)
-      }
-      .gay {
-        color: #ececec;
       }
     }
   }

@@ -79,7 +79,6 @@ export default {
     batchList: [],
     allBatchCount: '',
     endBatchCount: '',
-    isOnLine: false,
     stateMap: {
       '0': '未激活',
       '1': '待机',
@@ -146,7 +145,6 @@ export default {
             this.batchList = res.data.data.batchList
             this.allBatchCount = res.data.data.allBatchCount
             this.endBatchCount = res.data.data.endBatchCount
-            this.isOnLine = res.data.data.isOnline
           }
         })
     },
@@ -163,7 +161,7 @@ export default {
     },
     goRouter (itemInfo) {
       this.$store.commit('setBatch', itemInfo.batch)
-      this.$store.commit('setOnLine', this.isOnLine)
+      this.$store.commit('setOnLine', itemInfo.isOnline)
       this.$router.push({ name: 'TechnologyInfo' })
     }
   },

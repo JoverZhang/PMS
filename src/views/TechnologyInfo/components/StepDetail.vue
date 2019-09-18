@@ -18,7 +18,7 @@
         <mt-cell title="功能:">{{ stepInfo.fun }}</mt-cell>
         <mt-cell title="方式:">{{ stepInfo.method }}</mt-cell>
         <mt-cell title="参数:">{{ stepInfo.params }}</mt-cell>
-        <div v-for="(value ,phase) of materialItemInfoMap" :key="phase">
+        <div class="phase" v-for="(value ,phase) of materialItemInfoMap" :key="phase">
           <div style="margin-top: 3vw">相别: {{phase}}</div>
           <span v-for="(secValue, material) in value" :key="material">
             物料: {{material}}-{{secValue.no_count}}/{{secValue.all_count}}
@@ -27,29 +27,33 @@
 
       </div>
     </div>
-    <div style="position: fixed; bottom: 0; width: 100vw; display: flex">
+    <div class="btn-box">
       <mt-button
-        :type="isOnline?'default':'primary'"
-        :disabled="isOnline"
+        :type="isOnline=='1'?'default':'primary'"
+        :disabled="isOnline=='1'?true:false"
         @click="postHandler('production_start')"
       >开始生产
       </mt-button>
       <mt-button
-        :type="isOnline?'default':'primary'"
-        :disabled="isOnline"
+        :type="isOnline=='1'?'default':'primary'"
+        :disabled="isOnline=='1'?true:false"
         @click="postHandler('step_complete', {step: onStep})"
       >完成步骤
       </mt-button>
       <mt-button
-        :type="isOnline?'default':'primary'"
-        :disabled="onStep === stepInfo.step || isOnline"
+        :type="isOnline=='1'?'default':'primary'"
+        :disabled="isOnline=='1'?true:false"
         @click="postHandler('step_jump', {step: stepInfo.step})"
       >跳转步骤
       </mt-button>
-      <mt-button type="primary" @click="postHandler('is_stop')">暂停恢复</mt-button>
       <mt-button
-        :type="isOnline?'default':'primary'"
-        :disabled="!materialCode || isOnline"
+        :type="isOnline=='1'?'default':'primary'"
+        :disabled="isOnline=='1'?true:false"
+        @click="postHandler('is_stop')"
+      >暂停恢复</mt-button>
+      <mt-button
+        type="primary"
+        :disabled="!materialCode"
         @click="postHandler('touliao_decision',{qrcode: materialCode})"
       >确认投料
       </mt-button>
@@ -79,7 +83,7 @@ export default {
   data: () => ({
     materialCode: '',
     materialItemInfoMap: {},
-    isOnline: false
+    isOnline: '0'
   }),
 
   mounted () {
@@ -171,8 +175,18 @@ export default {
     // min-height: calc(100vh - 35.333vw - (60vw - 9.07vw));
 
     .scroll-tag {
-      height: 100vw;
+      /*height: 100vw;*/
       margin-bottom: 15vw;
+      .phase{
+        padding: 0 10px 10px;
+      }
     }
+  }
+  .btn-box{
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    display: flex;
+    background-color: #fff;
   }
 </style>
